@@ -13,7 +13,7 @@ copied as a whole and everything will still run.
 - An OpenAI API key (entered at the prompt, or set the `OPENAI_API_KEY`
   environment variable). LLM scripts use `gpt-4o` with temperature 0.1.
 - A CUDA GPU is used for BERT embedding extraction and XGBoost-GPU testing
-  if available, but everything falls back to CPU.
+  if available.
 
 ## Data
 
@@ -41,7 +41,7 @@ The eight flags:
 | 8 | `flag8_promo_template` | Promotional Template Substitution |
 
 All flags are evaluated from the posting text only — no web search is
-performed, and the fraud label is never shown to any agent.
+performed.
 
 ## Scripts
 
@@ -51,46 +51,47 @@ Run in roughly this order:
    (legitimacy, context, consistency) mark the eight flags for each posting;
    an orchestrator that sees only the flag results assigns a 0–10 risk
    score. Also produces three ablation scores using two sub-agents at a
-   time. Asks for a row range; existing values in the range are overwritten.
+   time. If this program is executed after the evaluation has completed,
+   existing values will be overwritten.
    Columns written: the eight flag columns plus `risk_score_all`,
    `risk_score_legit_context`, `risk_score_context_consist`,
    `risk_score_legit_consist`.
 
-2. **`single_pass_detector.py`** — baseline. One API call per posting with
+3. **`single_pass_detector.py`** — baseline. One API call per posting with
    the raw posting text and no flag framework. Writes
    `single_pass_risk_score`. The exact prompt is saved to
    `single_pass_query.txt`.
 
-3. **`flag_analysis.py`** — flag statistics: per-flag prevalence and fraud
+4. **`flag_analysis.py`** — flag statistics: per-flag prevalence and fraud
    rates (chi-square / Fisher), fraud rate by number of flags fired
    (Spearman), and risk-score distributions by fraud status
    (Mann-Whitney, AUROC). Outputs to `results/`.
 
-4. **`model_evaluation.py`** — 50-iteration Monte Carlo cross-validation
-   (stratified 80/20, SMOTE on training folds). Six models (LR, Elastic-Net
-   LR, Random Forest, XGBoost, MLP, BERT+MLP) x six feature groups (base,
-   + single-pass score, + multi-agent score, + each of the three ablation
-   scores). Metrics: accuracy, recall, F1, PR-AUC. Iterations run in
+5. **`model_evaluation.py`** — 50-iteration Monte Carlo cross-validation
+   (stratified 80/20, SMOTE on training folds). Four models (LR, Random Forest, XGBoost, 
+   BERT+MLP) x four feature groups (base, + single-pass score,
+   + multi-agent score, + each of the three ablation scores).
+   + Metrics: accuracy, recall, F1, PR-AUC. Iterations run in
    parallel. BERT CLS embeddings are extracted once and cached in
    `results/bert_cls_embeddings.npy`. Set `RANDOM_STATE_START` at the top
    to run a different batch of random states; output filenames include the
    range (e.g. `LR_results_rs1-50.csv`).
 
-5. **`statistical_comparisons.py`** — paired t-tests on the Monte Carlo
+7. **`statistical_comparisons.py`** — paired t-tests on the Monte Carlo
    results: base vs. single-pass vs. multi-agent, plus ablation comparisons
    of each two-agent score against the full three-agent score. Reports mean
    difference, t, p, Cohen's d, 95% CI.
 
-6. **`generate_manual_eval_sample.py`** — draws a 50-posting sample with at
+8. **`generate_manual_eval_sample.py`** — draws a 50-posting sample with at
    least 6 AI-positive cases per flag for human review. Writes a blind
    review sheet (no AI flags, no fraud labels) and an AI reference sheet to
    `flags_manual_eval/`.
 
-7. **`compare_manual_vs_ai_flags.py`** — after the manual review is filled
+9. **`compare_manual_vs_ai_flags.py`** — after the manual review is filled
    in, compares human vs. AI labels per flag (TP/TN/FP/FN, agreement,
    Cohen's kappa) and lists every disagreement.
 
-8. **`plot_risk_score_diagrams.py`** — 2x2 figure comparing single-pass and
+10. **`plot_risk_score_diagrams.py`** — 2x2 figure comparing single-pass and
    multi-agent risk scores: score distributions and fraud rate by score,
    with shared axes. Saves PNG and PDF to `diagram/`.
 
