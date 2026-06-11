@@ -20,7 +20,9 @@ copied as a whole and everything will still run.
 `EMSCAD_fraud_detection.csv` — the main dataset (8,781 postings, of which
 556 / 6.3% are labelled fraudulent in the `fraudulent_agent` column).
 Scripts append result columns to this file; the original posting fields are
-never modified.
+never modified. Note that due to the 25 MB file size limitation, the EMSCAD
+data is broken into 2 parts. Users should download both parts, combine them
+and rename the combined dataset to `EMSCAD_fraud_detection.csv`.
 
 `flag_definitions_agent.json` / `.xlsx` — definitions of the eight fraud
 indicator flags. Each flag has a `detection_agent` section (rules a
