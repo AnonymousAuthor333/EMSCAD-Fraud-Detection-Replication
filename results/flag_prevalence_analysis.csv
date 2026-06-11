@@ -1,0 +1,9 @@
+Flag,Column,Flagged (n),Prevalence (%),Base Fraud Rate (%),Fraud Rate Without (%),Fraud Rate With (%),Difference (pp),Relative Risk,p-value,Sig,Test
+Sensitive Information Request,flag1_sensitive_info,39,0.44,6.33,6.26,23.08,16.82,3.69,0.0006,***,Fisher
+Unidentifiable Employer,flag4_anon_employer,4230,48.17,6.33,2.77,10.17,7.4,3.67,0.0,***,Chi-sq
+Requirements Role Mismatch,flag5_req_role_mismatch,1935,22.04,6.33,4.54,12.66,8.12,2.79,0.0,***,Chi-sq
+Unrealistic Compensation,flag2_unrealistic_comp,806,9.18,6.33,5.53,14.27,8.74,2.58,0.0,***,Chi-sq
+Pressure Tactics,flag3_pressure_tactics,520,5.92,6.33,5.96,12.31,6.35,2.07,0.0,***,Chi-sq
+Promotional Template Substitution,flag8_promo_template,2396,27.29,6.33,5.47,8.64,3.17,1.58,0.0,***,Chi-sq
+Vague Information,flag7_vague_info,7455,84.9,6.33,5.28,6.52,1.24,1.23,0.0995,ns,Chi-sq
+Internal Information Conflict,flag6_info_conflict,905,10.31,6.33,6.42,5.52,-0.9,0.86,0.3268,ns,Chi-sq
