@@ -1,0 +1,60 @@
+======================================================================
+SINGLE-PASS LLM RISK SCORE — QUERY RECORD
+======================================================================
+
+Generated : 2026-06-06 22:17:10
+Model     : gpt-4o
+Temperature: 0.1
+Output col: single_pass_risk_score
+
+PURPOSE
+-------
+Each row of EMSCAD_fraud_detection.csv is evaluated with ONE API call.
+The model sees only the raw posting text and general fraud knowledge.
+No flag definitions, no orchestrator calibration, no multi-agent context.
+This serves as a controlled baseline for comparing against the multi-agent
+fraud_detector.py approach.
+
+======================================================================
+SYSTEM MESSAGE (sent as role='system')
+======================================================================
+
+You are reviewing job postings that were submitted by employers and recruiters on a public online employment platform around 2013. The dataset contains a mix of legitimate job opportunities and fraudulent postings. Your task is to read each posting as it was originally submitted and judge how likely it is to be fraudulent.
+
+Each posting is evaluated independently — retain no memory of previous calls. Return valid JSON only — no preamble, no explanation, no markdown.
+
+======================================================================
+USER MESSAGE TEMPLATE (sent as role='user')
+  {posting_text} is replaced at runtime by the formatted posting.
+  Posting format is identical to that used in the multi-agent pipeline
+  (agents.py::format_posting) to ensure a fair comparison.
+======================================================================
+
+The following is a job posting submitted by an employer or recruiter on an online employment website. Some postings on this platform are legitimate; others are fraudulent. Using only the information provided in this posting, assign a fraud risk score from 0 to 10.
+
+Score scale:
+  0  : definitely legitimate
+  1-2: very likely legitimate
+  3-4: more likely legitimate than not
+  5  : uncertain
+  6-7: more likely fraudulent than not
+  8-9: very likely fraudulent
+  10 : definitely fraudulent
+
+=== JOB POSTING ===
+{posting_text}
+
+Return ONLY: {{"risk_score": <integer 0-10>}}
+
+======================================================================
+POSTING FIELDS INCLUDED (in order, from agents.py::format_posting)
+======================================================================
+
+  Title, Location, Department, Salary Range, Employment Type,
+  Required Experience, Required Education, Industry, Function,
+  Telecommuting, Has Company Logo, Has Questions, Company Profile,
+  Description, Requirements, Benefits,
+  QCEW Annual Avg Employment, QCEW Avg Annual Pay,
+  QCEW OTY Employment Change, QCEW OTY Employment Pct Chg
+
+  NOTE: 'fraudulent_agent' is NEVER included (excluded in format_posting).

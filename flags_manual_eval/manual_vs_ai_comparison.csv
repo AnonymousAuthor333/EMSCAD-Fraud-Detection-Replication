@@ -1,0 +1,9 @@
+Flag,AI Column,N Compared,AI Positive,Human Positive,True Positive,True Negative,False Positive,False Negative,Agreement (%),Cohens Kappa
+Sensitive Information Request,flag1_sensitive_info,50,8,6,6,42,2,0,96.0,0.834
+Unrealistic Compensation,flag2_unrealistic_comp,50,13,16,10,31,3,6,82.0,0.565
+Pressure Tactics,flag3_pressure_tactics,50,8,7,7,42,1,0,98.0,0.922
+Unidentifiable Employer,flag4_anon_employer,50,33,26,25,16,8,1,82.0,0.635
+Requirements Role Mismatch,flag5_req_role_mismatch,50,24,19,14,21,10,5,70.0,0.394
+Internal Information Conflict,flag6_info_conflict,50,10,5,3,38,7,2,82.0,0.308
+Vague Information,flag7_vague_info,50,44,40,39,5,5,1,88.0,0.559
+Promotional Template Substitution,flag8_promo_template,50,21,18,15,26,6,3,82.0,0.623
