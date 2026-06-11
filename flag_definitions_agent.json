@@ -1,0 +1,289 @@
+{
+  "schema_purpose": "Fraud detection agent flag definitions for job posting analysis",
+  "flags": [
+    {
+      "flag_id": 1,
+      "name": "Sensitive Information Request",
+      "short_name": "sensitive_info",
+      "detection_agent": {
+        "description": "Trigger when the posting explicitly requests sensitive personal, financial, identity, login, or payment information at the application or screening stage, or when it contains unusually strong anticipatory language suggesting such information, documentation, or fees will be required before a formal offer.",
+        "trigger_criteria": [
+          "The posting instructs applicants to send or enter a Social Security number, tax identifier, national identity number, passport number, government ID number, driver's license number, identity-document image, or similar protected identifier during initial application or screening.",
+          "The posting asks for bank account details, routing details, direct-deposit setup information, payment-card details, payment-app credentials, payroll-account credentials, or other financial credentials before a formal offer or onboarding process is described.",
+          "The posting asks applicants to provide usernames, passwords, email credentials, payroll portal credentials, job-board credentials, or other login credentials.",
+          "The posting requires date of birth, full legal identity bundles, proof of address, identity scans, or similar identity-verification materials before a normal background-check, right-to-work, or onboarding stage is described.",
+          "The posting requires applicants to pay or cover an application, processing, equipment, training, certification-processing, background-check, visa, onboarding, or placement fee before employment is established.",
+          "The posting mentions payment, equipment, processing, or training costs that the applicant must cover, especially when the payment method is unusual, irreversible, or not explained as a normal employer-paid or reimbursed expense.",
+          "The posting requests copies of documents beyond ordinary application materials, such as identity proof, address proof, certificate copies, payroll documents, or financial verification, before describing an interview, offer, or standard onboarding process.",
+          "The posting combines urgency or immediate-start language with immediate payroll setup, direct-deposit activation, financial onboarding, identity verification, or background-history demands before an interview or offer.",
+          "The posting emphasizes trustworthiness, personal history, identity verification, or background history in a way that is disproportionate to the role and appears to justify early collection of sensitive data rather than ordinary screening."
+        ],
+        "do_not_trigger": [
+          "Do not trigger for ordinary application materials such as resume, cover letter, portfolio, work samples, references, salary expectations, availability, professional contact details, or basic contact information.",
+          "Do not trigger for requests to apply through a website, email a recruiter, call a phone number, complete a normal application form, or schedule an interview when no sensitive data, fee, or credential is requested.",
+          "Do not trigger for benefits descriptions mentioning payroll, retirement, insurance, tax withholding, direct deposit, reimbursement, relocation assistance, signing bonuses, or similar employment benefits unless the applicant is instructed to submit the underlying sensitive data early.",
+          "Do not trigger for ordinary statements that a background check, identity verification, work-authorization check, drug screening, fingerprinting, physical exam, or licensing verification may occur after an offer or as part of standard onboarding.",
+          "Do not trigger for citizenship, work authorization, license eligibility, professional registration eligibility, certification eligibility, safety training, or regulated-role qualifications unless the posting asks applicants to transmit sensitive identifiers, document images, financial details, credentials, or payment.",
+          "Do not trigger merely because the posting asks for full name, city, phone number, email address, availability, or other ordinary contact details.",
+          "Do not trigger solely because the employer is vague, the application link is opaque, or the recruiter is unverifiable; use the relevant identity or vagueness flags unless sensitive-data or payment signals are present."
+        ],
+        "detection_guidance": "First identify all application instructions, screening requirements, onboarding language, document requests, payment references, benefits language, and urgency language. Next, determine whether the applicant is being asked to provide sensitive identifiers, financial information, identity documents, login credentials, or money before a formal offer or normal onboarding stage. If no explicit request exists, consider only strong anticipatory signals: disproportionate identity/trust/background emphasis, upfront applicant-paid costs, early document requests beyond standard application materials, or immediate payroll/direct-deposit setup tied to urgency. Trigger only when the sensitive-data, document, payment, or early-financial-onboarding implication is clear and not merely a normal benefits, eligibility, or later-stage screening notice.",
+        "relaxation_notes": "This flag has been relaxed from an explicit-request-only rule to also capture rare, high-specificity anticipatory signals that strongly suggest sensitive information or fees will be requested later in the hiring funnel. The relaxation is intentionally narrow: ordinary benefits language, normal background-check notices, and standard application contact details remain non-triggering."
+      },
+      "orchestrator": {
+        "frequency_in_fraud": "rare",
+        "specificity_to_fraud": "high",
+        "false_positive_risk": "low",
+        "indicative_strength": "strong",
+        "risk_interpretation": "This is a high-value signal when it fires because legitimate job postings rarely request sensitive identifiers, financial credentials, login credentials, or applicant-paid fees at the initial stage. It should carry substantial standalone weight, especially when the request occurs before an offer or is paired with urgency or vague employer identity. Because the rule is intentionally narrow, absence of this flag should not reduce fraud risk much; many fraudulent postings defer sensitive-data collection until later."
+      }
+    },
+    {
+      "flag_id": 2,
+      "name": "Unrealistic Compensation",
+      "short_name": "unrealistic_comp",
+      "detection_agent": {
+        "description": "Trigger when the posting states compensation that is implausible, internally inconsistent, or materially under-explained for the role, seniority, location, industry, employment basis, or hours.",
+        "trigger_criteria": [
+          "The advertised pay is far above relevant industry, location, or role benchmarks without corresponding seniority, specialized skills, licensing, overtime, commission, or contract explanation.",
+          "The advertised pay is far below a plausible legal or market range for the stated hours and employment basis, and the posting presents it as real compensation rather than missing data.",
+          "The posting pairs unusually high compensation with entry-level status, no experience, minimal education, vague duties, or few meaningful requirements.",
+          "The pay range is extremely broad or incoherent, and the posting does not explain whether the range reflects base pay, commission, bonus, overtime, location bands, seniority bands, or total earning potential.",
+          "The pay unit is inconsistent or unclear, such as hourly pay appearing as annual pay, annual pay described as weekly or monthly pay, or part-time hours paired with full-time senior-level compensation without explanation.",
+          "The posting advertises high earnings, guaranteed earnings, or likely earnings outcomes for commission or incentive work but does not explain base pay, commission mechanics, sales context, quota, product, territory, or time period.",
+          "Compensation is used as the main hook while employer identity, job duties, requirements, and employment terms remain sparse or generic.",
+          "A nonzero structured pay value cannot be reconciled with the stated full-time, part-time, contract, stipend, or commission basis."
+        ],
+        "do_not_trigger": [
+          "Do not trigger merely because compensation is missing, blank, or shown as a zero-value placeholder.",
+          "Do not trigger for generic phrases such as competitive pay, weekly pay, base plus incentives, benefits package, signing bonus, relocation assistance, or performance incentives when no implausible amount is stated.",
+          "Do not trigger for high pay in specialized, senior, contract, technical, healthcare, engineering, consulting, sales, travel, union, overtime-heavy, or licensed roles when the requirements and employment basis plausibly support it.",
+          "Do not trigger for wide compensation ranges that are explained by commission, bonuses, overtime, shifts, location differentials, seniority bands, contract terms, or variable schedules.",
+          "Do not trigger for benefits-only claims, retirement matching, insurance, reimbursement, training, or perks unless a stated compensation amount is itself implausible or incoherent.",
+          "Do not trigger solely because pay is above a broad average; adjust for industry, location, seniority, employment type, and specialized requirements."
+        ],
+        "detection_guidance": "First extract every stated compensation figure, range, bonus, commission, stipend, earning-potential claim, and pay unit from the body and structured fields. Second, determine the role seniority, industry, location, hours, employment basis, required experience, credentials, and whether compensation is base pay, total compensation, commission, or incentives. Third, compare the stated pay to plausible market and role expectations after adjusting for specialization, contract status, overtime, travel, commission, and seniority. Trigger only if an actual compensation claim is present and remains implausible, incoherent, or materially under-explained after those adjustments; otherwise route missing or generic pay concerns to vagueness rather than this flag.",
+        "relaxation_notes": ""
+      },
+      "orchestrator": {
+        "frequency_in_fraud": "occasional",
+        "specificity_to_fraud": "medium",
+        "false_positive_risk": "medium",
+        "indicative_strength": "moderate",
+        "risk_interpretation": "This flag is a moderate fraud indicator because unrealistic or incoherent pay is often used as an attraction mechanism, but legitimate jobs can also have unusual compensation structures. Weight it more heavily when the compensation claim is central to the posting and the role details do not justify it. Treat it cautiously when the role is specialized, commission-based, contract-based, overtime-heavy, or otherwise likely to have variable pay."
+      }
+    },
+    {
+      "flag_id": 3,
+      "name": "Pressure Tactics",
+      "short_name": "pressure_tactics",
+      "detection_agent": {
+        "description": "Trigger when the posting uses manipulative urgency, scarcity, guaranteed-placement language, or emotional pressure to push applicants into immediate action or discourage careful evaluation.",
+        "trigger_criteria": [
+          "The posting uses explicit short deadlines, urgent response windows, or repeated immediate-action commands as a main appeal.",
+          "The posting claims limited slots, disappearing openings, exclusive access, or scarcity in a way that pressures applicants to act before evaluating the opportunity.",
+          "The posting promises same-day hiring, guaranteed placement, guaranteed selection, or near-guaranteed employment with little or no screening.",
+          "The posting combines no-experience or minimal-vetting language with immediate-start demands or rapid-hire promises.",
+          "The posting uses emotional pressure suggesting the applicant will miss financial rescue, special access, unusual income, or a life-changing opportunity if they delay.",
+          "The posting repeatedly tells applicants to act immediately while withholding concrete employer, role, compensation, or application details.",
+          "The posting pairs urgent action language with requests to move off-platform, provide sensitive data, pay money, or complete financial onboarding before ordinary evaluation."
+        ],
+        "do_not_trigger": [
+          "Do not trigger for a single ordinary recruiting phrase such as immediate opening, start date, apply today, apply for consideration, currently seeking, or qualified candidates should apply.",
+          "Do not trigger for legitimate scheduling needs in temporary, seasonal, shift-based, contract, event, healthcare, retail, warehouse, field, or project work when the posting otherwise provides concrete details.",
+          "Do not trigger merely because the posting is enthusiastic, promotional, mission-driven, or describes career growth, culture, perks, advancement, travel, bonuses, or benefits.",
+          "Do not trigger for stated start dates, contract duration, shift availability, rotation schedules, standby requirements, or travel requirements unless they are framed as coercive urgency.",
+          "Do not trigger for a small number of openings if scarcity is presented informationally rather than as pressure to bypass deliberation.",
+          "Do not trigger for rhetorical questions or generic opportunity language without urgency, scarcity, guaranteed hiring, or anti-deliberation cues."
+        ],
+        "detection_guidance": "First scan the title, opening, body, compensation pitch, and application instructions for urgency, scarcity, guaranteed placement, rapid-hire claims, and emotional pressure. Then distinguish normal hiring logistics from manipulative pressure by asking whether the language pushes immediate action, reduces scrutiny, bypasses ordinary vetting, or makes delay seem costly. Consider frequency and placement: repeated pressure language or pressure used as the main hook is stronger than an isolated phrase. Trigger only when urgency, scarcity, guarantee, or emotional-pressure cues are substantive and coercive rather than routine recruiting language.",
+        "relaxation_notes": ""
+      },
+      "orchestrator": {
+        "frequency_in_fraud": "rare",
+        "specificity_to_fraud": "medium",
+        "false_positive_risk": "medium",
+        "indicative_strength": "weak",
+        "risk_interpretation": "This flag is generally a weak standalone signal because legitimate employers may use urgency for real scheduling reasons. It becomes more meaningful when pressure language appears repeatedly, replaces concrete job details, or pushes applicants toward risky actions. Avoid over-weighting isolated phrases unless the posting also shows broader signs of manipulation or opacity."
+      }
+    },
+    {
+      "flag_id": 4,
+      "name": "Unidentifiable Employer",
+      "short_name": "employer_identity_absent",
+      "detection_agent": {
+        "description": "Trigger when the posting does not provide sufficient information to identify the hiring employer from the posting content alone. Evaluation is based entirely on what the posting contains — no external search or verification is performed. The flag assesses whether an applicant could determine who is hiring solely by reading the posting itself: whether a specific employer name is present, whether the profile provides coherent role-consistent identity details, and whether any identity anchors (named recruiter, agency brand, specific address, phone, or company domain embedded in text) appear. Postings that refer only to generic institutional labels, use placeholder content, provide no distinguishing employer details, or present an incoherent employer identity should trigger this flag.",
+        "trigger_criteria": [
+          "No specific employer name is extractable — posting uses only generic labels such as 'our company', 'local practice', 'established firm', 'the clinic', 'our client', or an unnamed institution.",
+          "Employer profile is entirely boilerplate with no company-specific details: no description of what the company actually does, its industry, products, services, size, or any identifying characteristic.",
+          "Staffing or recruiter post where neither the end-client employer nor the recruiting agency or firm is specifically named or described.",
+          "Placeholder tokens, hashed links, or redacted identifiers appear where an employer name, company domain, or application URL should be.",
+          "A company name is present but the profile describes a business type, industry, or scale that is internally inconsistent with the role and cannot be attributed to any coherent employer."
+        ],
+        "do_not_trigger": [
+          "Small businesses, local practices, churches, nonprofits, or public facilities that provide a specific name even without a website or contact details.",
+          "Confidential client searches where the staffing agency or recruiter IS specifically named and described.",
+          "Named public institutions (hospitals, government agencies, schools, utilities) that are identifiable from the posting context.",
+          "Postings that provide a company name and a coherent, role-consistent profile even if they lack external web-presence anchors."
+        ],
+        "detection_guidance": "Evaluate only the content within the posting — do not attempt any external search or verification. Read all employer-facing fields: company_profile, title context, description preamble, contact details, and application instructions. Ask: can an informed reader determine who is hiring from this posting alone? Trigger when: (a) the employer is referred to only generically with no specific name; (b) placeholder or redacted content appears where employer identity should be; (c) a name is present but the surrounding profile is incoherent, entirely boilerplate, or inconsistent with the role. Do not trigger when a specific name is present with a coherent, role-consistent description, even if the employer is small or lacks an online presence.",
+        "relaxation_notes": ""
+      },
+      "orchestrator": {
+        "frequency_in_fraud": "common",
+        "specificity_to_fraud": "medium",
+        "false_positive_risk": "medium",
+        "indicative_strength": "strong",
+        "risk_interpretation": "This is the most frequently triggered flag and reflects whether the employer establishes a credible identity within the posting text itself. Postings with no identifiable employer or only generic labels correlate strongly with fraud. Weight it more heavily when paired with Vague Information — both flags firing together signals an employer that neither identifies itself nor provides substantive job details."
+      }
+    },
+    {
+      "flag_id": 5,
+      "name": "Requirements Role Mismatch",
+      "short_name": "req_role_mismatch",
+      "detection_agent": {
+        "description": "Trigger when the posting contains a clear mismatch between title, seniority, duties, required qualifications, compensation context, structured experience level, industry logic, licensing expectations, or business-domain context.",
+        "trigger_criteria": [
+          "A managerial, supervisory, senior, lead, executive, or high-responsibility title is paired with entry-level status, no relevant experience, minimal education, or only generic skills despite duties involving staff, budget, operations, safety, compliance, risk, revenue, or complex delivery.",
+          "The structured experience level conflicts with the body, such as entry-level metadata paired with advanced technical, regulatory, leadership, training, or operational authority.",
+          "A senior or specialized professional role asks for little or no relevant technical, domain, licensing, or leadership experience without a trainee, apprenticeship, or development explanation.",
+          "A junior, clerical, or low-responsibility role demands advanced or unrelated specialized skills with no explanation.",
+          "The requirements include personal qualities, tools, credentials, or domain language copied from an unrelated industry or role, creating an incompatible business context.",
+          "The posting combines high responsibility, minimal requirements, vague duties, and unusually attractive compensation in a way that makes role calibration implausible.",
+          "A role requires regulations, tools, licenses, safety standards, or technical frameworks that do not fit the title, duties, employer context, or industry, and no client/project explanation is provided.",
+          "The title implies management or professional responsibility, but the body is only a generic recruitment pitch with no credible responsibilities or qualifications supporting that title."
+        ],
+        "do_not_trigger": [
+          "Do not trigger merely because requirements are absent, sparse, informal, non-degree-based, lower than expected, or truncated; use vagueness if missing information is the issue.",
+          "Do not trigger for legitimate trainee, apprenticeship, internship, graduate, rotational, military-transition, or development roles that explain why limited prior experience is acceptable.",
+          "Do not trigger solely because an employer uses inflated titles such as associate, specialist, executive, strategist, or manager for sales, retail, customer-service, or account roles where duties and requirements are otherwise coherent.",
+          "Do not trigger for mission-driven, public-sector, education, healthcare, nonprofit, regulated, or faith-based roles with context-specific eligibility or screening requirements that match the role.",
+          "Do not trigger when technical vocabulary, seniority, required years, tools, credentials, and duties align coherently.",
+          "Do not trigger solely because a credential or standard comes from an unexpected jurisdiction; treat that primarily as a location issue unless it also makes the role logic incoherent.",
+          "Do not trigger because employer identity, compensation, location, or application route is suspicious if the role duties and requirements are internally consistent."
+        ],
+        "detection_guidance": "First compare the title, seniority label, duties, required experience, education, skills, credentials, compensation context, structured fields, industry setting, and employer or client context. Second, identify whether the posting's signals point to incompatible seniority, responsibility, qualification level, or business domain. Third, distinguish true mismatch from missing information: absence or thinness alone is not enough. Trigger only when the internal calibration is clearly contradictory or implausible; otherwise assign concerns to vagueness, identity, compensation, or location as appropriate.",
+        "relaxation_notes": ""
+      },
+      "orchestrator": {
+        "frequency_in_fraud": "rare",
+        "specificity_to_fraud": "medium",
+        "false_positive_risk": "medium",
+        "indicative_strength": "moderate",
+        "risk_interpretation": "This flag is a moderate signal because fabricated or copied postings often combine inconsistent seniority, duties, and qualifications. It is more diagnostic when the mismatch is concrete and internal to the posting, rather than based on subjective expectations about what a role should require. Weight it cautiously where the posting may be a trainee role, informal small-employer posting, or legitimate role with unconventional title usage."
+      }
+    },
+    {
+      "flag_id": 6,
+      "name": "Internal Information Conflict",
+      "short_name": "internal_information_conflict",
+      "detection_agent": {
+        "description": "Trigger when the posting contains unresolved factual contradictions between distinct fields or sections about the same job, employer relationship, work arrangement, application process, qualifications, or operating context. The key test is whether two or more statements in the posting cannot reasonably be true at the same time unless an explanation is provided.",
+        "trigger_criteria": [
+          "Structured fields and narrative text conflict on core job facts such as work arrangement, employment type, schedule, contract status, department, function, worksite model, or application channel, with no clarifying explanation.",
+          "The title, category, industry, or function label points to one type of work while the body describes a materially different type of work, and the issue is a cross-field factual inconsistency rather than merely a high or low qualification bar.",
+          "Requirements or qualifications internally contradict each other, such as simultaneously requiring and waiving the same credential, authorization, schedule availability, work arrangement, or employment condition.",
+          "Application instructions conflict across sections, such as one section directing applicants to one process while another section states that a different process is required or prohibited.",
+          "Employer, client, recruiter, or worksite references conflict in a way that makes the actual hiring relationship or assignment unclear, provided the issue is a contradiction within the posting rather than simply an unverifiable company identity.",
+          "Location or jurisdiction signals conflict with the stated worksite or work arrangement, including local regulatory, licensing, safety, or agency references that point to an incompatible operating geography without explanation.",
+          "Compensation, benefits, schedule, or employment-status statements contradict each other as factual claims, even if the stated compensation itself is not obviously implausible."
+        ],
+        "do_not_trigger": [
+          "Do not trigger for missing information, thin descriptions, generic language, redactions, or lack of detail without an affirmative contradiction.",
+          "Do not trigger for a Requirements Role Mismatch where the issue is only that the duties, seniority, or qualifications are too high, too low, or poorly aligned with the title; use Flag 5 for that.",
+          "Do not trigger for unrealistic, excessive, or under-explained compensation unless there is also an internal contradiction between compensation-related statements; use Flag 2 for compensation plausibility.",
+          "Do not trigger for company identity uncertainty, unverifiable employers, or confusing branding unless the posting makes conflicting factual claims about who is hiring or who the applicant will work for; use Flag 4 for identity discoverability.",
+          "Do not trigger for vague, placeholder-heavy, fragmented, or truncated content unless two concrete statements actually conflict; use Flag 7 for missing or blurred information.",
+          "Do not trigger for explained multi-location, hybrid, travel, relocation, client-site, rotating, multi-department, or multi-entity arrangements.",
+          "Do not trigger for ordinary employer-profile language, headquarters or origin references, broad operating footprint statements, or recruiter office references that are clearly separate from the job assignment.",
+          "Do not trigger for isolated job-board taxonomy artifacts, scrape artifacts, or generic category labels when the body of the posting is otherwise coherent and does not create a substantive contradiction."
+        ],
+        "detection_guidance": "First, extract all factual claims from structured fields, title, description, requirements, benefits, employer profile, application instructions, contact details, and any work-arrangement fields. Second, group those claims by topic: role/function, work arrangement, location or jurisdiction, employment type, schedule, hiring entity, application process, qualifications, compensation facts, and operating context. Third, ask whether claims within the same topic can reasonably coexist; if they can coexist through ordinary explanations such as travel, hybrid work, client assignment, recruiter representation, multiple acceptable bases, or broad company footprint, do not trigger. Fourth, trigger only when the contradiction concerns a decision-critical fact and the posting does not resolve it. Record the conflicting fields or sections and state why the claims cannot both be true. If the concern is merely vagueness, implausibility, unverifiability, or mismatch in difficulty level rather than contradiction, route the evidence to the more specific flag.",
+        "relaxation_notes": ""
+      },
+      "orchestrator": {
+        "frequency_in_fraud": "occasional",
+        "specificity_to_fraud": "high",
+        "false_positive_risk": "medium",
+        "indicative_strength": "strong",
+        "risk_interpretation": "A clear unresolved contradiction across posting fields is a strong fraud signal because fraudulent or synthetic postings often combine fragments from incompatible templates or sources. Weight this flag highly when the conflict affects applicant decision-making, identity of the role, work arrangement, application process, or required qualifications. Down-weight isolated taxonomy or scrape-like inconsistencies unless they materially undermine the posting's factual coherence."
+      }
+    },
+    {
+      "flag_id": 7,
+      "name": "Vague Information",
+      "short_name": "vague_info",
+      "detection_agent": {
+        "description": "Trigger when the posting withholds, blurs, fragments, truncates, or replaces decision-critical job information with generic filler so that an applicant cannot reasonably evaluate the opportunity.",
+        "trigger_criteria": [
+          "Employer, recruiter, client, facility, or employer-of-record identity is missing, generic, unclear, or unsupported by contact or application details.",
+          "The recruiter, agency, client, and employer-of-record chain is opaque, especially in staffing or confidential-client postings.",
+          "Duties are generic, incoherent, fragmentary, boilerplate-heavy, or too sparse to understand the actual work.",
+          "The posting gives technical requirements or long skill lists but lacks corresponding job-specific responsibilities, employer context, worksite details, or application path.",
+          "Core offer terms are absent or unclear, including employment basis, hours, work arrangement, duration, compensation basis, benefits meaning, worksite, reporting context, or application process.",
+          "Compensation is missing, represented by a placeholder value, or described only through generic phrases such as competitive pay, incentives, bonuses, relocation, retirement matching, or benefits without explaining the basis or terms, when other material details are also missing.",
+          "Application links, contact details, phone numbers, email routes, or domains are placeholder-like, redacted, hashed, incomplete, broken, or opaque.",
+          "The posting appears truncated mid-sentence, contains broken formatting that impairs meaning, or consists largely of legal, equal-opportunity, branding, culture, or company boilerplate without substantive job content.",
+          "The company profile is hollow, promotional, grandiose, incoherent, or describes a business model without concrete identity anchors.",
+          "The posting uses broad labels such as department, facility, office, client, or business unit without explaining the actual function, employer context, or work performed.",
+          "Perks, culture language, travel, parties, advancement, bonuses, training, or benefits substitute for concrete facts about the job, employer, compensation, or application route.",
+          "The posting contains selective specificity: detailed tools, credentials, or tasks are present, but crucial employer, client, offer, worksite, compensation, or application facts are missing."
+        ],
+        "do_not_trigger": [
+          "Do not trigger solely because the posting is short, informal, unpolished, or missing salary if it still identifies the employer or recruiter, role, location, application path, and core work clearly.",
+          "Do not trigger for legitimate confidential searches when the recruiter or agency is clearly identified and provides enough role, location, employment basis, and contact detail.",
+          "Do not trigger solely for zero-value, blank, or missing structured compensation fields unless other decision-critical information is also absent or blurred.",
+          "Do not trigger solely for employer branding, culture language, mission language, enthusiasm, or benefits summaries when substantive role and identity facts are present.",
+          "Do not trigger for small employers, schools, nonprofits, religious organizations, professional practices, or local businesses that provide enough name, location, contact, duties, and application information to evaluate the job.",
+          "Do not trigger for formatting artifacts, encoding issues, repeated headers, or scrape noise unless they impair meaning or accompany substantive missing information.",
+          "Do not trigger merely because the job is technical, jargon-heavy, or specialized if the employer identity, role duties, worksite, employment basis, and application route are understandable."
+        ],
+        "detection_guidance": "First assess whether an applicant can answer the essential questions: who is hiring or recruiting, what work is performed, where and how the job is performed, what qualifications matter, what employment basis and compensation or benefits are offered, and how to apply. Second, identify missing, generic, placeholder-like, incoherent, truncated, or boilerplate-substituted elements. Third, consider selective specificity: detailed requirements do not cure missing employer, client, worksite, compensation, offer, or application facts. Trigger when multiple decision-critical elements are absent or unclear, or when one central element is so opaque that the opportunity cannot be evaluated.",
+        "relaxation_notes": ""
+      },
+      "orchestrator": {
+        "frequency_in_fraud": "common",
+        "specificity_to_fraud": "medium",
+        "false_positive_risk": "medium",
+        "indicative_strength": "moderate",
+        "risk_interpretation": "This flag is common in fraudulent postings but also common in low-quality legitimate postings, so it should usually be treated as a broad contextual risk signal rather than decisive proof. Weight it more when vagueness affects core identity, application, compensation, worksite, or offer terms rather than minor omissions. Because it often appears with other issues, its scoring value is strongest when it helps explain why applicants could not verify or evaluate the opportunity."
+      }
+    },
+    {
+      "flag_id": 8,
+      "name": "Promotional Template Substitution",
+      "short_name": "promotional_template_substitution",
+      "detection_agent": {
+        "description": "Trigger when substantive job information is displaced by promotional, employer-brand, recruitment-ad, or generic template language that reads more like a broad sales pitch than a concrete job description. The flag targets content whose function is persuasive or decorative instead of informative, especially when it substitutes for role-specific duties, team context, deliverables, or realistic qualification detail.",
+        "trigger_criteria": [
+          "The description is dominated by employer-branding, mission language, culture slogans, growth claims, generic opportunity language, or broad recruitment advertising while providing little concrete information about actual duties, deliverables, team context, tools, work conditions, or reporting relationships.",
+          "The posting appeals broadly to almost any applicant through generic motivation, ambition, personality, or lifestyle language rather than addressing the qualifications and responsibilities of the stated role.",
+          "A long company profile, values statement, benefits pitch, or market-facing promotional block appears where role-specific responsibilities or requirements should be, materially reducing the applicant's ability to understand the job.",
+          "Specialized keywords, credentials, tools, or regulatory concepts are listed without enough project, team, industry, or task context to explain why they are needed, creating a keyword-stuffed or template-filled impression rather than a coherent role specification.",
+          "The posting combines highly generic promotional framing with isolated specific requirements, producing an asymmetry where the requirements look pasted in but the role context remains absent or purely promotional.",
+          "The tone shifts abruptly between formal job-specification language, marketing copy, casual appeals, and generic template phrases in a way that suggests assembled content rather than a unified employer-authored posting.",
+          "Promises of exceptional opportunity, fast success, broad advancement, or unusually attractive working conditions are used as vague persuasion in place of concrete role information, without necessarily meeting the urgency or guarantee threshold for Pressure Tactics."
+        ],
+        "do_not_trigger": [
+          "Do not trigger for ordinary employer branding, mission statements, culture language, benefits summaries, or equal-opportunity language when the posting also provides concrete duties, qualifications, work arrangement, and role context.",
+          "Do not trigger merely because a posting is short, sparse, truncated, redacted, or generic; use Flag 7 when the main issue is missing or blurred information without a promotional-template pattern.",
+          "Do not trigger for copied or repeated text solely because sections overlap internally; only trigger if the duplicated or boilerplate material substitutes for job-specific substance under this new definition.",
+          "Do not trigger for legitimate entry-level, trainee, seasonal, or high-volume roles that use broad applicant-facing language but still clearly explain the work, requirements, schedule, and hiring context.",
+          "Do not trigger for standard recruiter descriptions, staffing-agency summaries, or client-confidential postings if they still convey the role's actual duties, required qualifications, work model, and assignment context.",
+          "Do not trigger for manipulative urgency, guaranteed placement, scarcity pressure, or emotional coercion as the primary issue; use Flag 3 for those patterns.",
+          "Do not trigger for unverifiable employer identity or missing company presence as the primary issue; use Flag 4.",
+          "Do not trigger for direct contradictions across fields; use Flag 6. Do not trigger for a substantive mismatch between title, seniority, duties, and qualifications; use Flag 5."
+        ],
+        "detection_guidance": "Evaluate the functional value of each content block. Identify whether the description, requirements, benefits, and employer profile help an applicant understand what work will be performed, what qualifications matter, who the role serves, and what the working context is. Then assess whether promotional or template language occupies the space where those job-specific details should appear. Trigger only when persuasive, brand-oriented, generic-opportunity, or keyword-stuffed content materially substitutes for role substance, not when it merely accompanies a valid job description. Look for asymmetry: broad sales pitch plus thin role context, generic motivational appeals plus isolated technical terms, or values-heavy language plus absent duties. If the issue is only absence of information, use Vague Information; if the issue is only duplicated text, do not rely on duplication unless it also functions as promotional substitution; if the issue is pressure or guaranteed outcomes, use Pressure Tactics.",
+        "relaxation_notes": ""
+      },
+      "orchestrator": {
+        "frequency_in_fraud": "occasional",
+        "specificity_to_fraud": "medium",
+        "false_positive_risk": "medium",
+        "indicative_strength": "moderate",
+        "risk_interpretation": "This flag should be treated as a moderate fraud signal: many legitimate employers use branding language, but fraudulent postings more often let promotional or generic template content replace the actual job specification. Weight it more strongly when paired with identity uncertainty, vague information, internal conflicts, or role-context gaps. Weight it less strongly when the posting contains a complete and coherent role description despite some marketing language."
+      }
+    }
+  ]
+}
